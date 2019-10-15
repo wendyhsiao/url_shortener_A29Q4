@@ -1,13 +1,19 @@
 const express = require('express')
 const app = express()
 port = 3000
+const exphbs = require('express-handlebars')
 
+// 設定express-handlebars
+app.engine('handlebars', exphbs({ defaultLayout: 'main' }))
+app.set('view engine', 'handlebars')
+
+// 設定路由
 app.get('/', (req, res) => {
-  res.send('首頁')
+  res.render('index')
 })
 
 app.post('/', (req, res) => {
-  res.send('送出短網址')
+  res.redirect('/')
 })
 
 app.listen(port, () => {

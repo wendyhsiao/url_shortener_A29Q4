@@ -10,7 +10,7 @@
     <form action="/" method="POST" class="col-8 mx-auto text-center mt-3">
       <div class="form-group">
         <label for="url">取得短網址</label>
-        <input type="text" class="form-control" id="url" placeholder="輸入網址">
+        <input type="text" class="form-control" id="url" name="url" placeholder="輸入網址" value={{{url}}}>
       </div>
 
       <button type="submit" class="btn btn-primary">產生</button>
@@ -21,7 +21,7 @@
     <div class="col-8 mx-auto text-center mt-5">
       <h4>你的縮網址為</h4>
       <div>
-        <a type="text" class="col-5" id="url-short">http://2j03j;53</a>
+        <a type="text" class="col-5" id="url-short">localhost:3000/{{{url_shorten}}}</a>
       </div>
 
     </div>

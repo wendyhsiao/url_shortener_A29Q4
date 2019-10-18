@@ -5,6 +5,8 @@ const exphbs = require('express-handlebars')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const dns = require('dns')
+const flash = require('connect-flash')
+
 // 設定express-handlebars
 app.engine('handlebars', exphbs({ defaultLayout: 'main' }))
 app.set('view engine', 'handlebars')
@@ -23,6 +25,8 @@ db.once('open', () => {
 })
 // 載入model
 const Url = require('./models/url.js')
+// 設定connect-flash
+app.use(flash())
 
 // 設定路由
 app.get('/', (req, res) => {
@@ -39,43 +43,45 @@ function makeRandom(number) {
 }
 
 app.post('/', (req, res) => {
-  console.log('req', req.body)
-  let originalUrl = req.body.url
-  dns.lookup(originalUrl, (err) => {
-    if (err) return res.status(404).send({ error: '地址找不到' })
-  })
+  const regex = /^https?:\/\//
+  const originalUrl = req.body.url
+  const httpsUrl = (regex.test(originalUrl)) ? originalUrl : `https://${originalUrl}` //確認是否有加https或http
+  const githubURL = new URL(httpsUrl) //為了解析網址而帶入URL建構式
 
-  Url.findOne({ url: req.body.url }, (err, url) => {
-    console.log('url', url)
-    if (url) { // 如有轉過回傳短網址
-      res.render('index', { url: req.body.url, url_shorten: url.url_shorten })
+  dns.lookup(githubURL.hostname, (err, address) => { //確認網址是否有效
+    if (err) {
+      return res.status(404).render('index', { url: originalUrl, alert: '操作失敗，請確認是否為有效網址' })
     } else {
-      function confirmCode(item) {
-        let urlCode = makeRandom(item)
-        Url.findOne({ url_shorten: urlCode }, (err, code) => {
-          if (!code) {
-            const newUrl = new Url({
-              url: req.body.url,
-              url_shorten: urlCode
+      Url.findOne({ url: httpsUrl }, (err, url) => {
+        if (url) {  // 如已轉過短網址就回傳原本的資料
+          res.render('index', { url: req.body.url, url_shorten: url.url_shorten })
+        } else {
+          function confirmCode(item) {
+            let urlCode = makeRandom(item)
+            Url.findOne({ url_shorten: urlCode }, (err, code) => {
+              if (!code) {
+                const newUrl = new Url({
+                  url: httpsUrl,
+                  url_shorten: urlCode
+                })
+                newUrl.save()
+                  .then(url => {
+                    res.render('index', { url: req.body.url, url_shorten: urlCode })
+                  })
+              } else {
+                return confirmCode(5)
+              }
             })
-            newUrl.save()
-              .then(url => {
-                res.render('index', { url: req.body.url, url_shorten: urlCode })
-              })
-          } else {
-            return confirmCode(5)
           }
-        })
-      }
-      confirmCode(5)
-
+          confirmCode(5)
+        }
+      })
     }
   })
 })
 
 app.get('/:urlCode', (req, res) => {
   Url.findOne({ url_shorten: req.params.urlCode }, (err, url) => {
-    console.log('url--get', url.url)
     res.redirect(url.url)
   })
 })

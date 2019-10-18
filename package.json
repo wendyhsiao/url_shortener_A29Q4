@@ -13,10 +13,12 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "connect-flash": "^0.1.1",
     "dns": "^0.2.2",
     "express": "^4.17.1",
     "express-handlebars": "^3.1.0",
-    "mongoose": "^5.7.5"
+    "mongoose": "^5.7.5",
+    "url-parse": "^1.4.7"
   },
   "devDependencies": {
     "nodemon": "^1.19.3"

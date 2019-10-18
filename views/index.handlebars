@@ -17,13 +17,16 @@
     </form>
   </div>
 
+  {{>messages}}
+
+  {{#if url_shorten}}
   <div class="row">
     <div class="col-8 mx-auto text-center mt-5">
       <h4>你的縮網址為</h4>
       <div>
         <a type="text" class="col-5" id="url-short">localhost:3000/{{{url_shorten}}}</a>
       </div>
-
     </div>
   </div>
+  {{/if}}
 </div>

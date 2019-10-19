@@ -1,8 +1,11 @@
 {{#if alert}}
-<div class="alert alert-warning alert-dismissible fade show" role="alert">
-  {{{this.alert}}}
-  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">x</span>
-  </button>
+<div class="col-8 mx-auto text-center mt-3">
+  <div class="alert alert-warning alert-dismissible fade show" data-toggle="popover" role="alert">
+    {{{this.alert}}}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">x</span>
+    </button>
+  </div>
 </div>
+
 {{/if}}

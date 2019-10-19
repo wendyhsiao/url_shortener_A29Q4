@@ -12,7 +12,7 @@ app.engine('handlebars', exphbs({ defaultLayout: 'main' }))
 app.set('view engine', 'handlebars')
 // 設定body-parser
 app.use(bodyParser.urlencoded({ extended: true }))
-
+app.use(express.static('public'))
 // 設定mongoDB連線
 mongoose.connect('mongodb://localhost/url', { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true })
 
@@ -27,6 +27,7 @@ db.once('open', () => {
 const Url = require('./models/url.js')
 // 設定connect-flash
 app.use(flash())
+
 
 // 設定路由
 app.get('/', (req, res) => {
@@ -47,8 +48,9 @@ app.post('/', (req, res) => {
   const originalUrl = req.body.url
   const httpsUrl = (regex.test(originalUrl)) ? originalUrl : `https://${originalUrl}` //確認是否有加https或http
   const githubURL = new URL(httpsUrl) //為了解析網址而帶入URL建構式
-
+  console.log('githubURL', githubURL)
   dns.lookup(githubURL.hostname, (err, address) => { //確認網址是否有效
+    console.log('address', address)
     if (err) {
       return res.status(404).render('index', { url: originalUrl, alert: '操作失敗，請確認是否為有效網址' })
     } else {
@@ -81,8 +83,9 @@ app.post('/', (req, res) => {
 })
 
 app.get('/:urlCode', (req, res) => {
-  Url.findOne({ url_shorten: req.params.urlCode }, (err, url) => {
-    res.redirect(url.url)
+  Url.findOne({ url_shorten: req.params.urlCode }, (err, item) => {
+    console.log('item', item)
+    res.redirect(item.url)
   })
 })
 

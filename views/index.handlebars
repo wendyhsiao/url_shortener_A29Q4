@@ -2,10 +2,11 @@
   <div class="row">
     <div class="col-12" style="text-align: center;">
       <h1>短網址產生器</h1>
+      <img src="img/url shortener.png" style="width:350px;" alt="">
     </div>
-
   </div>
 
+  {{>messages}}
   <div class="row">
     <form action="/" method="POST" class="col-8 mx-auto text-center mt-3">
       <div class="form-group">
@@ -17,14 +18,12 @@
     </form>
   </div>
 
-  {{>messages}}
-
   {{#if url_shorten}}
   <div class="row">
     <div class="col-8 mx-auto text-center mt-5">
       <h4>你的縮網址為</h4>
       <div>
-        <a type="text" class="col-5" id="url-short">localhost:3000/{{{url_shorten}}}</a>
+        <a type="text" class="col-5" id="url-short">https://localhost:3000/{{{url_shorten}}}</a>
       </div>
     </div>
   </div>

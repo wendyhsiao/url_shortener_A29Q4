@@ -46,12 +46,14 @@ function makeRandom(number) {
 app.post('/', (req, res) => {
   const regex = /^https?:\/\//
   const originalUrl = req.body.url
-  const httpsUrl = (regex.test(originalUrl)) ? originalUrl : `https://${originalUrl}` //確認是否有加https或http
+
+  if (originalUrl === '') {  // 如果網址為空白跳出警告
+    return res.render('index', { url: originalUrl, alert: '網址不可空白' })
+  }
+  const httpsUrl = (regex.test(originalUrl)) ? originalUrl : `https://${originalUrl}`  //確認是否有加https或http
   const githubURL = new URL(httpsUrl) //為了解析網址而帶入URL建構式
-  console.log('githubURL', githubURL)
   dns.lookup(githubURL.hostname, (err, address) => { //確認網址是否有效
-    console.log('address', address)
-    if (err) {
+    if (err) {  //無法解析會跳出警告
       return res.status(404).render('index', { url: originalUrl, alert: '操作失敗，請確認是否為有效網址' })
     } else {
       Url.findOne({ url: httpsUrl }, (err, url) => {
@@ -60,7 +62,7 @@ app.post('/', (req, res) => {
         } else {
           function confirmCode(item) {
             let urlCode = makeRandom(item)
-            Url.findOne({ url_shorten: urlCode }, (err, code) => {
+            Url.findOne({ url_shorten: urlCode }, (err, code) => { // 尋找是否有相同的短網址code
               if (!code) {
                 const newUrl = new Url({
                   url: httpsUrl,
@@ -70,7 +72,7 @@ app.post('/', (req, res) => {
                   .then(url => {
                     res.render('index', { url: req.body.url, url_shorten: urlCode })
                   })
-              } else {
+              } else {  //如有相同的短網址，將會重複執行confirmCode()
                 return confirmCode(5)
               }
             })
@@ -80,11 +82,11 @@ app.post('/', (req, res) => {
       })
     }
   })
+
 })
 
 app.get('/s/:urlCode', (req, res) => {
   Url.findOne({ url_shorten: req.params.urlCode }, (err, item) => {
-    console.log('item', item)
     res.redirect(item.url)
   })
 })

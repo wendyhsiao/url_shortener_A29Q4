@@ -82,7 +82,7 @@ app.post('/', (req, res) => {
   })
 })
 
-app.get('/:urlCode', (req, res) => {
+app.get('/s/:urlCode', (req, res) => {
   Url.findOne({ url_shorten: req.params.urlCode }, (err, item) => {
     console.log('item', item)
     res.redirect(item.url)

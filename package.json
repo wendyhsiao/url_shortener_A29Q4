@@ -16,7 +16,7 @@
     "connect-flash": "^0.1.1",
     "dns": "^0.2.2",
     "express": "^4.17.1",
-    "express-handlebars": "^3.1.0",
+    "express-handlebars": "^5.3.1",
     "mongoose": "^5.7.5",
     "url-parse": "^1.4.7"
   },
